@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     navItems.forEach(item => {
         const itemPath = item.getAttribute('href');
-        // Simple logic for setting active relative link
         if (itemPath === currentPath || (currentPath === '' && itemPath === 'index.html')) {
             item.classList.add('active');
         } else {
@@ -57,12 +56,43 @@ document.addEventListener('DOMContentLoaded', () => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('is-visible');
-                // Optional: Stop observing once animated
-                // observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
 
     const animatedElements = document.querySelectorAll('.animate-on-scroll');
     animatedElements.forEach(el => observer.observe(el));
+
+    // 5. Theme Toggle
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const htmlEl = document.documentElement;
+
+    const applyTheme = (theme) => {
+        if (theme === 'light') {
+            htmlEl.setAttribute('data-theme', 'light');
+            if (themeToggleBtn) {
+                themeToggleBtn.querySelector('i').className = 'fas fa-moon';
+                themeToggleBtn.title = 'Switch to dark mode';
+            }
+        } else {
+            htmlEl.removeAttribute('data-theme');
+            if (themeToggleBtn) {
+                themeToggleBtn.querySelector('i').className = 'fas fa-sun';
+                themeToggleBtn.title = 'Switch to light mode';
+            }
+        }
+    };
+
+    // Load saved theme (defaults to dark)
+    const savedTheme = localStorage.getItem('auralex-theme') || 'dark';
+    applyTheme(savedTheme);
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = htmlEl.hasAttribute('data-theme') ? 'light' : 'dark';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('auralex-theme', newTheme);
+            applyTheme(newTheme);
+        });
+    }
 });
